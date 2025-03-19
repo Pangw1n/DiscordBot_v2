@@ -15,6 +15,8 @@ import org.jointheleague.features.examples.first_features.RandomNumber;
 import org.jointheleague.features.help_embed.HelpListener;
 import org.jointheleague.features.student.first_feature.FeatureOne;
 
+import feature1.Feature1;
+
 public class DiscordBot {
 
 	private String token;
@@ -39,10 +41,10 @@ public class DiscordBot {
 		api.awaitReady();
 
 		//Print the URL to invite the bot
-		if (printInvite) {
-			System.out.println("To authorize your bot, send your teacher this link: " + api.getInviteUrl()
-					+"\n\tThis message can be disabled in org.jointheleague.Launcher.java");
-		}
+//		if (printInvite) {
+//			System.out.println("To authorize your bot, send your teacher this link: " + api.getInviteUrl()
+//					+"\n\tThis message can be disabled in org.jointheleague.Launcher.java");
+//		}
 
 		//Send bot connected message in channel
 		MessageCreateData botConnected = new MessageCreateBuilder()
@@ -61,6 +63,7 @@ public class DiscordBot {
 		addFeature(new HighLowGame(channelName));
 		addFeature(new NewsApi(channelName));
 		addFeature(new CatFactsApi(channelName));
+		addFeature(new Feature1(channelName));
 	}
 
 	private void addFeature(Feature feature){

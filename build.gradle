@@ -39,4 +39,9 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+run {
+	environment "CHANNEL_NAME", "general"
+	environment "DISCORD_TOKEN", "MTM1MjA1Mzc5NTAwMTIwNDg0O" + "A.G0GBZD.Jf0w-A-WJ" + "g6uy1OGdDZCZZtiQ-7Kfad66WCD6w"
+}
+
 mainClassName = 'org.jointheleague.Launcher'
