@@ -26,12 +26,22 @@ public class Feature2 extends Feature
 	}
 	
 	private String getBoard() {
-		String result = "";
+		String result = "⠀⠀a⠀b⠀c⠀d⠀e⠀f⠀g⠀h\n";
 		for (int r = 0; r < 8; r++)
 		{
+			result += (8 - r) + "⠀";
 			for (int c = 0; c < 8; c++)
 			{
-				result += "♔";
+				switch(board[r][c].getType())
+				{
+					case KING:
+						result += "♔";
+						break;
+					default:
+						result += " ";
+						break;
+				}
+				result += "⠀";
 			}
 			result += "\n";
 		}

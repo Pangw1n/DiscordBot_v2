@@ -16,6 +16,7 @@ import org.jointheleague.features.help_embed.HelpListener;
 import org.jointheleague.features.student.first_feature.FeatureOne;
 
 import feature1.Feature1;
+import feature2.Feature2;
 
 public class DiscordBot {
 
@@ -64,6 +65,7 @@ public class DiscordBot {
 		addFeature(new NewsApi(channelName));
 		addFeature(new CatFactsApi(channelName));
 		addFeature(new Feature1(channelName));
+		addFeature(new Feature2(channelName));
 	}
 
 	private void addFeature(Feature feature){
