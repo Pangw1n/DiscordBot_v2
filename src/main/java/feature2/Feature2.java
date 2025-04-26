@@ -49,7 +49,7 @@ public class Feature2 extends Feature
 		}
 	}
 	
-	private String movePiece(String from, String to) {
+	public String movePiece(String from, String to) {
 		// TODO Auto-generated method stub
 		int fromCol = from.charAt(0) - 'a';
 		int fromRow = from.charAt(1) - '1';
@@ -60,13 +60,16 @@ public class Feature2 extends Feature
 			return "Out of bounds";
 		if (board[toRow][toCol].getColor() == board[fromRow][fromCol].getColor())
 			return "You cannot take a piece of the same color";
+		if (!isLegal(board[fromRow][fromCol], fromRow, fromCol, toRow, toCol))
+			return "Illegal move";
 		Piece temp = board[fromRow][fromCol];
 		board[fromRow][fromCol] = new Piece(PieceType.EMPTY, Color.EMPTY);
 		board[toRow][toCol] = temp;
+		board[toRow][toCol].moved();
 		return getBoard();
 	}
 	
-	private void setPiece(String from, String toColor, String toPiece)
+	public void setPiece(String from, String toColor, String toPiece)
 	{
 		int fromCol = from.charAt(0) - 'a';
 		int fromRow = from.charAt(1) - '1';
@@ -113,7 +116,7 @@ public class Feature2 extends Feature
 		board[fromRow][fromCol] = new Piece(type, color);
 	}
 
-	private String getBoard() {
+	public String getBoard() {
 		String result = "```  a b c d e f g h\n";
 		for (int r = 7; r >= 0; r--)
 		{
@@ -223,40 +226,145 @@ public class Feature2 extends Feature
 	}
 	
 	
-	private boolean isLegal(Piece piece, int fromRow, int fromCol, int toRow, int toCol)
+	public boolean isLegal(Piece piece, int fromRow, int fromCol, int toRow, int toCol)
 	{
+		int direction;
+		int rowDir;
+		int colDir;
 		switch (piece.getType())
 		{
 			case PAWN:
-				int direction = (piece.getColor() == Color.WHITE) ? 1 : -1;
+				direction = (piece.getColor() == Color.WHITE) ? 1 : -1;
 				if (toRow - fromRow == direction)
 				{
 					if (Math.abs(toCol - fromCol) == 1 && board[toRow][toCol].getColor() != Color.EMPTY)
 					{
-						return false;
+						return true;
 					}
 					else if (toCol == fromCol && board[toRow][toCol].getColor() == Color.EMPTY)
 					{
 						return true;
 					}
 				}
-				else if (piece.isFirstMove())
+				else if (piece.isFirstMove() && toRow - fromRow == 2 * direction)
 				{
-					
+					if (checkLine(fromRow, fromCol, direction, 0, 2))
+					{
+						return true;
+					}
 				}
 				return false;
 			case KING:
+				if (Math.abs(toRow - fromRow) <= 1 && Math.abs(toCol - fromCol) <= 1 && !checkAttack(toRow, toCol, (piece.getColor() == Color.WHITE) ? Color.BLACK : Color.WHITE))
+				{
+					return true;
+				}
+				else if (piece.isFirstMove() && toRow == fromRow && Math.abs(toCol - fromCol) == 2)
+				{
+					direction = (toCol - fromCol) / 2;
+					if (direction == -1)
+					{
+						for (int c = fromCol; c >= toCol; c--)
+						{
+							if (checkAttack(fromRow, c, (piece.getColor() == Color.WHITE) ? Color.BLACK : Color.WHITE))
+							{
+								return false;
+							}
+						}
+						if (checkLine(fromRow, fromCol, 0, direction, 4) && board[toRow][0].getType() == PieceType.ROOK && board[toRow][0].isFirstMove())
+						{
+							movePiece("a" + toRow, "d" + toRow);
+							return true;
+						}
+					}
+					else if (direction == 1)
+					{
+						for (int c = fromCol; c <= toCol; c++)
+						{
+							if (checkAttack(fromRow, c, (piece.getColor() == Color.WHITE) ? Color.BLACK : Color.WHITE))
+							{
+								return false;
+							}
+						}
+						if (checkLine(fromRow, fromCol, 0, direction, 3) && board[toRow][0].getType() == PieceType.ROOK && board[toRow][0].isFirstMove())
+						{
+							movePiece("h" + toRow, "f" + toRow);
+							return true;
+						}
+					}
+				}
 				return false;
 			case QUEEN:
+				rowDir = (toRow == fromRow) ? 0 : (Math.abs(toRow - fromRow) / (toRow - fromRow));
+				colDir = (toCol == fromCol) ? 0 : (Math.abs(toCol - fromCol) / (toCol - fromCol));
+				if (rowDir == 0 || colDir == 0 || Math.abs(toRow - fromRow) == Math.abs(toCol - fromCol))
+				{
+					if (checkLine(fromRow, fromCol, rowDir, colDir, Math.abs(toRow - fromRow)))
+					{
+						return true;
+					}
+				}
 				return false;
 			case ROOK:
+				rowDir = (toRow == fromRow) ? 0 : (Math.abs(toRow - fromRow) / (toRow - fromRow));
+				colDir = (toCol == fromCol) ? 0 : (Math.abs(toCol - fromCol) / (toCol - fromCol));
+				if (rowDir == 0 || colDir == 0)
+				{
+					if (checkLine(fromRow, fromCol, rowDir, colDir, Math.abs(toRow - fromRow)))
+					{
+						return true;
+					}
+				}
 				return false;
 			case KNIGHT:
+				if ((Math.abs(toRow - fromRow) == 2 && Math.abs(toCol - fromCol) == 1) || (Math.abs(toRow - fromRow) == 1 && Math.abs(toCol - fromCol) == 2))
+				{
+					return true;
+				}
 				return false;
 			case BISHOP:
+				rowDir = (toRow == fromRow) ? 0 : (Math.abs(toRow - fromRow) / (toRow - fromRow));
+				colDir = (toCol == fromCol) ? 0 : (Math.abs(toCol - fromCol) / (toCol - fromCol));
+				if (rowDir != 0 && colDir != 0 && Math.abs(toRow - fromRow) == Math.abs(toCol - fromCol))
+				{
+					if (checkLine(fromRow, fromCol, rowDir, colDir, Math.abs(toRow - fromRow)))
+					{
+						return true;
+					}
+				}
 				return false;
 			default:
 				return false;
 		}
+	}
+	
+	public boolean checkLine(int row, int col, int rowDir, int colDir, int steps)
+	{
+		for (int i = 1; i < steps; i++)
+		{
+			if (board[row + rowDir * i][col + colDir * i].getType() != PieceType.EMPTY)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public boolean checkAttack(int row, int col, Color color)
+	{
+		for (int r = 0; r < 8; r++)
+		{
+			for (int c = 0; c < 8; c++)
+			{
+				if (board[r][c].getColor() == color)
+				{
+					if (isLegal(board[r][c], r, c, row, col))
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 }

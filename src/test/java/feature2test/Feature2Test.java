@@ -114,5 +114,19 @@ class Feature2Test {
         //Then
         assertEquals(command, helpEmbedTitle);
     }
-
+    
+    @Test
+    void testCheckLine()
+    {
+    	//Given
+    	feature2.resetBoard();
+    	
+    	//When
+    	boolean result1 = feature2.checkLine(0, 7, 1, 0, 5);
+    	boolean result2 = feature2.checkLine(1, 0, 1, 0, 1);
+    	
+    	//Then
+    	assertFalse(result1);
+    	assertTrue(result2);
+    }
 }
