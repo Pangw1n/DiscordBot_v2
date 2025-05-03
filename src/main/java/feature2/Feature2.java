@@ -264,32 +264,38 @@ public class Feature2 extends Feature
 					direction = (toCol - fromCol) / 2;
 					if (direction == -1)
 					{
-						for (int c = fromCol; c >= toCol; c--)
+						if (checkLine(fromRow, fromCol, 0, direction, 4))
 						{
-							if (checkAttack(fromRow, c, (piece.getColor() == Color.WHITE) ? Color.BLACK : Color.WHITE))
+							for (int c = fromCol; c >= toCol; c--)
 							{
-								return false;
+								if (checkAttack(fromRow, c, (piece.getColor() == Color.WHITE) ? Color.BLACK : Color.WHITE))
+								{
+									return false;
+								}
 							}
-						}
-						if (checkLine(fromRow, fromCol, 0, direction, 4) && board[toRow][0].getType() == PieceType.ROOK && board[toRow][0].isFirstMove())
-						{
-							movePiece("a" + toRow, "d" + toRow);
-							return true;
+							if (board[toRow][0].getType() == PieceType.ROOK && board[toRow][0].isFirstMove())
+							{
+								movePiece("a" + (toRow + 1), "d" + (toRow + 1));
+								return true;
+							}
 						}
 					}
 					else if (direction == 1)
 					{
-						for (int c = fromCol; c <= toCol; c++)
+						if (checkLine(fromRow, fromCol, 0, direction, 3))
 						{
-							if (checkAttack(fromRow, c, (piece.getColor() == Color.WHITE) ? Color.BLACK : Color.WHITE))
+							for (int c = fromCol; c <= toCol; c++)
 							{
-								return false;
+								if (checkAttack(fromRow, c, (piece.getColor() == Color.WHITE) ? Color.BLACK : Color.WHITE))
+								{
+									return false;
+								}
 							}
-						}
-						if (checkLine(fromRow, fromCol, 0, direction, 3) && board[toRow][0].getType() == PieceType.ROOK && board[toRow][0].isFirstMove())
-						{
-							movePiece("h" + toRow, "f" + toRow);
-							return true;
+							if (board[toRow][7].getType() == PieceType.ROOK && board[toRow][7].isFirstMove())
+							{
+								movePiece("h" + (toRow + 1), "f" + (toRow + 1));
+								return true;
+							}
 						}
 					}
 				}
@@ -297,9 +303,23 @@ public class Feature2 extends Feature
 			case QUEEN:
 				rowDir = (toRow == fromRow) ? 0 : (Math.abs(toRow - fromRow) / (toRow - fromRow));
 				colDir = (toCol == fromCol) ? 0 : (Math.abs(toCol - fromCol) / (toCol - fromCol));
-				if (rowDir == 0 || colDir == 0 || Math.abs(toRow - fromRow) == Math.abs(toCol - fromCol))
+				if (rowDir != 0 && colDir != 0 && Math.abs(toRow - fromRow) == Math.abs(toCol - fromCol))
 				{
 					if (checkLine(fromRow, fromCol, rowDir, colDir, Math.abs(toRow - fromRow)))
+					{
+						return true;
+					}
+				}
+				else if (rowDir != 0 && colDir == 0)
+				{
+					if (checkLine(fromRow, fromCol, rowDir, 0, Math.abs(toRow - fromRow)))
+					{
+						return true;
+					}
+				}
+				else if (rowDir == 0 && colDir != 0)
+				{
+					if (checkLine(fromRow, fromCol, 0, colDir, Math.abs(toCol - fromCol)))
 					{
 						return true;
 					}
@@ -308,9 +328,16 @@ public class Feature2 extends Feature
 			case ROOK:
 				rowDir = (toRow == fromRow) ? 0 : (Math.abs(toRow - fromRow) / (toRow - fromRow));
 				colDir = (toCol == fromCol) ? 0 : (Math.abs(toCol - fromCol) / (toCol - fromCol));
-				if (rowDir == 0 || colDir == 0)
+				if (rowDir != 0 && colDir == 0)
 				{
-					if (checkLine(fromRow, fromCol, rowDir, colDir, Math.abs(toRow - fromRow)))
+					if (checkLine(fromRow, fromCol, rowDir, 0, Math.abs(toRow - fromRow)))
+					{
+						return true;
+					}
+				}
+				else if (rowDir == 0 && colDir != 0)
+				{
+					if (checkLine(fromRow, fromCol, 0, colDir, Math.abs(toCol - fromCol)))
 					{
 						return true;
 					}
