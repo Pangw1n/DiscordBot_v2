@@ -171,6 +171,21 @@ public class Feature2 extends Feature
 			result += "\n";
 		}
 		result += "```";
+		boolean check = false;
+		for (int r = 0; r < board.length; r++) {
+			for (int c = 0; c < board[r].length; c++) {
+				if (board[r][c].getType() == PieceType.KING) {
+					if (checkAttack(r, c, board[r][c].getColor() == Color.WHITE ? Color.BLACK : Color.WHITE)) {
+						check = true;
+					}
+				}
+			}
+		}
+		if (check)
+		{
+			result += "\nCheck";
+		}
+		
 		return result;
 	}
 
