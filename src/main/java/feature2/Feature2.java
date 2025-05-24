@@ -7,7 +7,7 @@ import org.jointheleague.features.help_embed.plain_old_java_objects.help_embed.H
 public class Feature2 extends Feature
 {
     public final String COMMAND = "!chess";
-    private Piece[][] board;
+    public Piece[][] board;
     
 	public Feature2(String channelName) {
         super(channelName);
@@ -76,7 +76,7 @@ public class Feature2 extends Feature
 				}
 			}
 		}
-		if (checkAttack(simBoard, kingRow, kingCol, board[fromRow][fromCol].getColor() == Color.WHITE ? Color.BLACK : Color.WHITE))
+		if (checkAttack(simBoard, kingRow, kingCol, board[fromRow][fromCol].getColor().opposite()))
 			return "Endangers King";
 		
 		Piece temp = board[fromRow][fromCol];
@@ -192,7 +192,7 @@ public class Feature2 extends Feature
 		for (int r = 0; r < board.length; r++) {
 			for (int c = 0; c < board[r].length; c++) {
 				if (board[r][c].getType() == PieceType.KING) {
-					if (checkAttack(board, r, c, board[r][c].getColor() == Color.WHITE ? Color.BLACK : Color.WHITE)) {
+					if (checkAttack(board, r, c, board[r][c].getColor().opposite())) {
 						check = true;
 					}
 				}
@@ -201,6 +201,10 @@ public class Feature2 extends Feature
 		if (check)
 		{
 			result += "\nCheck";
+			if (checkMate(Color.WHITE))
+				result += "mate: black wins";
+			else if (checkMate(Color.BLACK))
+				result += "mate: white wins";
 		}
 		
 		return result;
@@ -258,7 +262,7 @@ public class Feature2 extends Feature
 	}
 	
 	
-	private boolean isLegal(Piece[][] board, int fromRow, int fromCol, int toRow, int toCol)
+	public boolean isLegal(Piece[][] board, int fromRow, int fromCol, int toRow, int toCol)
 	{
 		int direction;
 		int rowDir;
@@ -279,7 +283,7 @@ public class Feature2 extends Feature
 						return true;
 					}
 				}
-				else if (piece.isFirstMove() && toRow - fromRow == 2 * direction)
+				else if (piece.isFirstMove() && toRow - fromRow == 2 * direction && toCol == fromCol && board[toRow][toCol].getColor() == Color.EMPTY)
 				{
 					if (checkLine(board, fromRow, fromCol, direction, 0, 2))
 					{
@@ -288,7 +292,7 @@ public class Feature2 extends Feature
 				}
 				return false;
 			case KING:
-				if (Math.abs(toRow - fromRow) <= 1 && Math.abs(toCol - fromCol) <= 1 && !checkAttack(board, toRow, toCol, (piece.getColor() == Color.WHITE) ? Color.BLACK : Color.WHITE))
+				if (Math.abs(toRow - fromRow) <= 1 && Math.abs(toCol - fromCol) <= 1 && !checkAttack(board, toRow, toCol, piece.getColor().opposite()))
 				{
 					return true;
 				}
@@ -301,7 +305,7 @@ public class Feature2 extends Feature
 						{
 							for (int c = fromCol; c >= toCol; c--)
 							{
-								if (checkAttack(board, fromRow, c, (piece.getColor() == Color.WHITE) ? Color.BLACK : Color.WHITE))
+								if (checkAttack(board, fromRow, c, piece.getColor().opposite()))
 								{
 									return false;
 								}
@@ -319,7 +323,7 @@ public class Feature2 extends Feature
 						{
 							for (int c = fromCol; c <= toCol; c++)
 							{
-								if (checkAttack(board, fromRow, c, (piece.getColor() == Color.WHITE) ? Color.BLACK : Color.WHITE))
+								if (checkAttack(board, fromRow, c, piece.getColor().opposite()))
 								{
 									return false;
 								}
@@ -398,7 +402,7 @@ public class Feature2 extends Feature
 		}
 	}
 	
-	private boolean checkLine(Piece[][] board, int row, int col, int rowDir, int colDir, int steps)
+	public boolean checkLine(Piece[][] board, int row, int col, int rowDir, int colDir, int steps)
 	{
 		for (int i = 1; i < steps; i++)
 		{
@@ -410,7 +414,7 @@ public class Feature2 extends Feature
 		return true;
 	}
 	
-	private boolean checkAttack(Piece[][] board, int row, int col, Color color)
+	public boolean checkAttack(Piece[][] board, int row, int col, Color color)
 	{
 		for (int r = 0; r < 8; r++)
 		{
@@ -428,14 +432,14 @@ public class Feature2 extends Feature
 		return false;
 	}
 	
-	private boolean checkMate(Color color)
+	public boolean checkMate(Color color)
 	{
-		for (int fromRow = 0; fromRow < 8; fromRow++)
-			for (int fromCol = 0; fromCol < 8; fromCol++)
-				if (board[fromRow][fromCol].getColor() == color)
-					for (int toRow = 0; toRow < 8; toRow++)
-						for (int toCol = 0; toCol < 8; toCol++)
-							if (isLegal(board, fromRow, fromCol, toRow, toCol))
+		for (int fromRow = 0; fromRow < 8; fromRow++) {
+			for (int fromCol = 0; fromCol < 8; fromCol++) {
+				if (board[fromRow][fromCol].getColor() == color) {
+					for (int toRow = 0; toRow < 8; toRow++) {
+						for (int toCol = 0; toCol < 8; toCol++) {
+							if (isLegal(board, fromRow, fromCol, toRow, toCol) && (board[toRow][toCol].getColor() != board[fromRow][fromCol].getColor()))
 							{
 								Piece[][] simBoard = simMove(fromRow, fromCol, toRow, toCol);
 								int kingRow = 0;
@@ -444,20 +448,30 @@ public class Feature2 extends Feature
 								{
 									for (int c = 0; c < 8; c++)
 									{
-										if (simBoard[r][c].getType() == PieceType.KING && simBoard[r][c].getColor() == board[fromRow][fromCol].getColor())
+										if (simBoard[r][c].getType() == PieceType.KING && simBoard[r][c].getColor() == color)
 										{
 											kingRow = r;
 											kingCol = c;
+											System.out.println(kingRow + " " + kingCol + " " + simBoard[r][c].getColor() + color);
 										}
 									}
 								}
-								if (!checkAttack(simBoard, kingRow, kingCol, board[fromRow][fromCol].getColor() == Color.WHITE ? Color.BLACK : Color.WHITE))
+								System.out.println(fromRow + " " + fromCol + " to " + toRow + " " + toCol);
+								if (!checkAttack(simBoard, kingRow, kingCol, color.opposite()))
+								{
+									System.out.println("Return false");
 									return false;
+								}
 							}
+						}
+					}
+				}
+			}
+		}
 		return true;
 	}
 	
-	private Piece[][] simMove(int fromRow, int fromCol, int toRow, int toCol)
+	public Piece[][] simMove(int fromRow, int fromCol, int toRow, int toCol)
 	{
 		Piece[][] simBoard = new Piece[8][8];
 		for (int r = 0; r < 8; r++)

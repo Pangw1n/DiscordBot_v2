@@ -122,8 +122,8 @@ class Feature2Test {
     	feature2.resetBoard();
     	
     	//When
-    	boolean result1 = feature2.checkLine(0, 7, 1, 0, 5);
-    	boolean result2 = feature2.checkLine(1, 0, 1, 0, 1);
+    	boolean result1 = feature2.checkLine(feature2.board, 0, 7, 1, 0, 5);
+    	boolean result2 = feature2.checkLine(feature2.board, 1, 0, 1, 0, 1);
     	
     	//Then
     	assertFalse(result1);
