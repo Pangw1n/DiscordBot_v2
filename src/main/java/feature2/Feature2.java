@@ -8,6 +8,10 @@ public class Feature2 extends Feature
 {
     public final String COMMAND = "!chess";
     public Piece[][] board;
+    public static boolean lightMode;
+    private boolean promotion = false;
+    private int promotionRow = -1;
+    private int promotionCol = -1;
     
 	public Feature2(String channelName) {
         super(channelName);
@@ -26,25 +30,55 @@ public class Feature2 extends Feature
 		else if (messageContent.contains(COMMAND))
 		{
 			String[] command = messageContent.replace(COMMAND, "").trim().split(" ");
-			if (command.length == 1)
+			if (promotion)
 			{
-				String from = command[0];
-				setPiece(from, "", "");
-				event.sendResponse(getBoard());
+				Color color = board[promotionRow][promotionCol].getColor();
+				switch (command[0].toLowerCase())
+				{
+				case "bishop":
+					board[promotionRow][promotionCol] = new Piece(PieceType.BISHOP, color);
+					promotion = false;
+					event.sendResponse(getBoard());
+					break;
+				case "rook":
+					board[promotionRow][promotionCol] = new Piece(PieceType.ROOK, color);
+					promotion = false;
+					event.sendResponse(getBoard());
+					break;
+				case "knight":
+					board[promotionRow][promotionCol] = new Piece(PieceType.KNIGHT, color);
+					promotion = false;
+					event.sendResponse(getBoard());
+					break;
+				case "queen":
+					board[promotionRow][promotionCol] = new Piece(PieceType.QUEEN, color);
+					promotion = false;
+					event.sendResponse(getBoard());
+					break;
+				}
 			}
-			if (command.length == 2)
+			else
 			{
-				String from = command[0];
-				String to = command[1];
-				event.sendResponse(movePiece(from, to));
-			}
-			else if (command.length == 3)
-			{
-				String from = command[0];
-				String toColor = command[1];
-				String toPiece = command[2];
-				setPiece(from, toColor, toPiece);
-				event.sendResponse(getBoard());
+				if (command.length == 1)
+				{
+					String from = command[0];
+					setPiece(from, "", "");
+					event.sendResponse(getBoard());
+				}
+				if (command.length == 2)
+				{
+					String from = command[0];
+					String to = command[1];
+					event.sendResponse(movePiece(from, to));
+				}
+				else if (command.length == 3)
+				{
+					String from = command[0];
+					String toColor = command[1];
+					String toPiece = command[2];
+					setPiece(from, toColor, toPiece);
+					event.sendResponse(getBoard());
+				}
 			}
 		}
 	}
@@ -83,7 +117,17 @@ public class Feature2 extends Feature
 		board[fromRow][fromCol] = new Piece(PieceType.EMPTY, Color.EMPTY);
 		board[toRow][toCol] = temp;
 		board[toRow][toCol].moved();
-		return getBoard();
+		if (board[toRow][toCol].getType() == PieceType.PAWN && (toRow == 0 || toRow == 7))
+		{
+			promotion = true;
+			promotionRow = toRow;
+			promotionCol = toCol;
+			return getBoard() + "\n\"!chess [piece]\" to promote the pawn to a bishop, knight, rook, or queen";
+		}
+		else
+		{
+			return getBoard();
+		}
 	}
 	
 	public void setPiece(String from, String toColor, String toPiece)
@@ -144,37 +188,37 @@ public class Feature2 extends Feature
 				switch(board[r][c].getType())
 				{
 					case KING:
-						if (color == Color.BLACK)
+						if (color == Color.BLACK == lightMode)
 							result += "♚";
 						else
 							result += "♔";
 						break;
 					case QUEEN:
-						if (color == Color.BLACK)
+						if (color == Color.BLACK == lightMode)
 							result += "♛";
 						else
 							result += "♕";
 						break;
 					case ROOK:
-						if (color == Color.BLACK)
+						if (color == Color.BLACK == lightMode)
 							result += "♜";
 						else
 							result += "♖";
 						break;
 					case KNIGHT:
-						if (color == Color.BLACK)
+						if (color == Color.BLACK == lightMode)
 							result += "♞";
 						else
 							result += "♘";
 						break;
 					case BISHOP:
-						if (color == Color.BLACK)
+						if (color == Color.BLACK == lightMode)
 							result += "♝";
 						else
 							result += "♗";
 						break;
 					case PAWN:
-						if (color == Color.BLACK)
+						if (color == Color.BLACK == lightMode)
 							result += "♟";
 						else
 							result += "♙";
