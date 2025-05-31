@@ -1,4 +1,4 @@
-package feature2test;
+package feature3test;
 
 import org.jointheleague.api_wrapper.ReceivedMessage;
 import org.jointheleague.features.abstract_classes.Feature;
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import feature2.Feature2;
+import feature3.Feature3;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -21,10 +21,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.never;
 
-class Feature2Test {
+class Feature3Test {
 
     private final String testChannelName = "test";
-    private final Feature2 feature2 = new Feature2(testChannelName);
+    private final Feature3 feature3 = new Feature3(testChannelName);
 
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
@@ -52,12 +52,12 @@ class Feature2Test {
         //Given
 
         //When
-        String command = feature2.COMMAND;
+        String command = feature3.COMMAND;
 
         //Then
 
-        if(!(feature2 instanceof Feature2)){
-            assertNotEquals("!chess", command);
+        if(!(feature3 instanceof Feature3)){
+            assertNotEquals("!hangman", command);
         }
 
         assertNotEquals("", command);
@@ -69,11 +69,11 @@ class Feature2Test {
     @Test
     void itShouldHandleMessagesWithCommand() {
         //Given
-        HelpEmbed helpEmbed = new HelpEmbed(feature2.COMMAND, "test");
-        when(receivedMessage.getMessageContent()).thenReturn(feature2.COMMAND);
+        HelpEmbed helpEmbed = new HelpEmbed(feature3.COMMAND, "test");
+        when(receivedMessage.getMessageContent()).thenReturn(feature3.COMMAND);
 
         //When
-        feature2.handle(receivedMessage);
+        feature3.handle(receivedMessage);
 
         //Then
         verify(receivedMessage, times(1)).sendResponse(anyString());
@@ -86,7 +86,7 @@ class Feature2Test {
         when(receivedMessage.getMessageContent()).thenReturn(command);
 
         //When
-        feature2.handle(receivedMessage);
+        feature3.handle(receivedMessage);
 
         //Then
         verify(receivedMessage, never()).sendResponse("");
@@ -97,7 +97,7 @@ class Feature2Test {
         //Given
 
         //When
-        HelpEmbed actualHelpEmbed = feature2.getHelpEmbed();
+        HelpEmbed actualHelpEmbed = feature3.getHelpEmbed();
 
         //Then
         assertNotNull(actualHelpEmbed);
@@ -108,25 +108,23 @@ class Feature2Test {
         //Given
 
         //When
-        String helpEmbedTitle = feature2.getHelpEmbed().getTitle();
-        String command = feature2.COMMAND;
+        String helpEmbedTitle = feature3.getHelpEmbed().getTitle();
+        String command = feature3.COMMAND;
 
         //Then
         assertEquals(command, helpEmbedTitle);
     }
     
     @Test
-    void testCheckLine()
+    void getWordShouldReturnAString()
     {
     	//Given
-    	feature2.resetBoard();
     	
     	//When
-    	boolean result1 = feature2.checkLine(feature2.board, 0, 7, 1, 0, 5);
-    	boolean result2 = feature2.checkLine(feature2.board, 1, 0, 1, 0, 1);
+    	String word = feature3.getWord();
     	
     	//Then
-    	assertFalse(result1);
-    	assertTrue(result2);
+    	assertNotEquals(word, null);
     }
+
 }

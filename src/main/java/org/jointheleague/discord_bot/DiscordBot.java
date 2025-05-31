@@ -17,6 +17,7 @@ import org.jointheleague.features.student.first_feature.FeatureOne;
 
 import feature1.Feature1;
 import feature2.Feature2;
+import feature3.Feature3;
 
 public class DiscordBot {
 
@@ -66,6 +67,7 @@ public class DiscordBot {
 		addFeature(new CatFactsApi(channelName));
 		addFeature(new Feature1(channelName));
 		addFeature(new Feature2(channelName));
+		addFeature(new Feature3(channelName));
 	}
 
 	private void addFeature(Feature feature){
