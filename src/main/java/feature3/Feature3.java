@@ -15,7 +15,7 @@ public class Feature3 extends Feature
     public final String COMMAND = "!hangman";
 
     private WebClient webClient;
-    private static final String baseUrl = "https://random-word-api.herokuapp.com/word";
+    private static final String baseUrl = "https://random-word-api.vercel.app/api";
     
     private boolean playing;
     private String word;
@@ -37,23 +37,50 @@ public class Feature3 extends Feature
 		if (messageContent.equals(COMMAND))
 		{
 			startGame();
-			event.sendResponse("``" + guessed + "``");
+			event.sendResponse("``lives: " + lives + "\n" + guessed + "\nIncorrect guesses: ``");
 		}
 		else if (messageContent.trim().indexOf(COMMAND) == 0)
 		{
 			String[] command = messageContent.trim().split(" ");
 			if (playing && command.length == 2 && command[1].length() == 1)
 			{
-				boolean correct = guess(command[1].charAt(0));
-				event.sendResponse("``" + guessed + "``");
+				char guess = command[1].toLowerCase().charAt(0);
+				boolean correct = guess(guess);
+				
+				if (guessed.equalsIgnoreCase(word))
+				{
+					event.sendResponse("``You guessed the word! \nThe word was " + word + "``");
+					playing = false;
+				}
+				else if (lives <= 0)
+				{
+					event.sendResponse("``You ran out of lives! \nThe word was " + word + "``");
+					playing = false;
+				}
+				else
+				{
+					String response = "``lives: " + lives + "\n" + guessed + "\nIncorrect guesses: ";
+					
+					for (int i = 0; i < incorrect.size(); i++)
+					{
+						response += incorrect.get(i);
+						if (i < incorrect.size() - 1)
+						{
+							response += ", ";
+						}
+					}
+					response += "``";
+				
+					event.sendResponse(response);
+				}
 			}
 		}
 	}
 	
 	public void startGame()
 	{
-		word = getWord();
-		lives = 5;
+		word = getWord().toLowerCase();
+		lives = 6;
 		guessed = "";
 		for (int i = 0; i < word.length(); i++)
 		{
@@ -76,6 +103,11 @@ public class Feature3 extends Feature
 			}
 		}
 		guessed = builder.toString();
+		if (!correct)
+		{
+			incorrect.add(guess);
+			lives -= 1;
+		}
 		return correct;
 	}
 	
