@@ -15,7 +15,7 @@ public class Feature2 extends Feature
     
 	public Feature2(String channelName) {
         super(channelName);
-        helpEmbed = new HelpEmbed(COMMAND, "Play a game of chess with another user. Use !chess to reset the board. !chess [from] [to] moves the piece from one tile to the other. Tiles are column letter then row number (e.g. e4)");
+        helpEmbed = new HelpEmbed(COMMAND, "Play a game of chess with another user. \nUse !chess to reset the board. \n!chess [from] [to] moves the piece from one tile to the other. Tiles are column letter then row number (e.g. e4)");
 	}
 
 	@Override

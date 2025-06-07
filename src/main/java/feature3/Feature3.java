@@ -25,7 +25,7 @@ public class Feature3 extends Feature
     
 	public Feature3(String channelName) {
         super(channelName);
-        helpEmbed = new HelpEmbed(COMMAND, "");
+        helpEmbed = new HelpEmbed(COMMAND, "!hangman [easy/normal/hard] to start a new game. \nLeave the field blank for normal difficulty. \n!hangman [letter] to make a guess.");
         
         webClient = WebClient.builder().baseUrl(baseUrl).build();
 	}
@@ -34,53 +34,79 @@ public class Feature3 extends Feature
 	public void handle(ReceivedMessage event) {
         String messageContent = event.getMessageContent();
         
-		if (messageContent.equals(COMMAND))
-		{
-			startGame();
+        if (messageContent.equalsIgnoreCase(COMMAND))
+        {
+			startGame(6);
 			event.sendResponse("``lives: " + lives + "\n" + guessed + "\nIncorrect guesses: ``");
-		}
-		else if (messageContent.trim().indexOf(COMMAND) == 0)
+        }
+		if (messageContent.trim().indexOf(COMMAND) == 0)
 		{
 			String[] command = messageContent.trim().split(" ");
-			if (playing && command.length == 2 && command[1].length() == 1)
+			if (command[0].equalsIgnoreCase(COMMAND))
 			{
-				char guess = command[1].toLowerCase().charAt(0);
-				boolean correct = guess(guess);
-				
-				if (guessed.equalsIgnoreCase(word))
+				if (playing && command.length == 2 && command[1].length() == 1)
 				{
-					event.sendResponse("``You guessed the word! \nThe word was " + word + "``");
-					playing = false;
-				}
-				else if (lives <= 0)
-				{
-					event.sendResponse("``You ran out of lives! \nThe word was " + word + "``");
-					playing = false;
-				}
-				else
-				{
-					String response = "``lives: " + lives + "\n" + guessed + "\nIncorrect guesses: ";
-					
-					for (int i = 0; i < incorrect.size(); i++)
+					char guess = command[1].toLowerCase().charAt(0);
+					if (guessed.contains("" + guess) || incorrect.contains(guess))
 					{
-						response += incorrect.get(i);
-						if (i < incorrect.size() - 1)
-						{
-							response += ", ";
-						}
+						event.sendResponse("``You already guessed that letter``");
+						return;
 					}
-					response += "``";
-				
-					event.sendResponse(response);
+					boolean correct = guess(guess);
+					
+					if (guessed.equalsIgnoreCase(word))
+					{
+						event.sendResponse("``You guessed the word! \nThe word was " + word + "``");
+						playing = false;
+					}
+					else if (lives <= 0)
+					{
+						event.sendResponse("``You ran out of lives! \nThe word was " + word + "``");
+						playing = false;
+					}
+					else
+					{
+						String response = "``lives: " + lives + "\n" + guessed + "\nIncorrect guesses: ";
+						
+						for (int i = 0; i < incorrect.size(); i++)
+						{
+							response += incorrect.get(i);
+							if (i < incorrect.size() - 1)
+							{
+								response += ", ";
+							}
+						}
+						response += "``";
+					
+						event.sendResponse(response);
+					}
+				}
+				else if (command.length == 2 && command[1].length() != 1)
+				{
+					if (command[1].equalsIgnoreCase("easy"))
+					{
+						startGame(10);
+						event.sendResponse("``lives: " + lives + "\n" + guessed + "\nIncorrect guesses: ``");
+					}
+					else if (command[1].equalsIgnoreCase("normal"))
+					{
+						startGame(6);
+						event.sendResponse("``lives: " + lives + "\n" + guessed + "\nIncorrect guesses: ``");
+					}
+					else if (command[1].equalsIgnoreCase("hard"))
+					{
+						startGame(4);
+						event.sendResponse("``lives: " + lives + "\n" + guessed + "\nIncorrect guesses: ``");
+					}
 				}
 			}
 		}
 	}
 	
-	public void startGame()
+	public void startGame(int l)
 	{
 		word = getWord().toLowerCase();
-		lives = 6;
+		lives = l;
 		guessed = "";
 		for (int i = 0; i < word.length(); i++)
 		{
