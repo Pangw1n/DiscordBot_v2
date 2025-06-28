@@ -132,7 +132,7 @@ public class Feature3 extends Feature
 	
 	public void startGame(int l, int h)
 	{
-		word = getWord().toLowerCase();
+		word = getNewWord().toLowerCase();
 		lives = l;
 		hints = h;
 		guessed = "";
@@ -165,7 +165,7 @@ public class Feature3 extends Feature
 		return correct;
 	}
 	
-	public String getWord()
+	public String getNewWord()
 	{
 		//Make the request, accepting the response as a plain old java object you created
         Mono<String> stringMono = webClient.get()
@@ -181,7 +181,7 @@ public class Feature3 extends Feature
         return message;
 	}
 	
-	public void hint()
+	public char hint()
 	{
 		ArrayList<Character> letters = new ArrayList<Character>();
 		for (int i = 0; i < word.length(); i++)
@@ -191,7 +191,7 @@ public class Feature3 extends Feature
 				letters.add(word.charAt(i));
 			}
 		}
-		char character = word.charAt((int)(Math.random() * letters.size()));
+		char character = letters.get((int)(Math.random() * letters.size()));
 		StringBuilder builder = new StringBuilder(guessed);
 		for (int i = 0; i < word.length(); i++)
 		{
@@ -201,5 +201,17 @@ public class Feature3 extends Feature
 			}
 		}
 		guessed = builder.toString();
+		return character;
 	}
+	
+	public void setWord(String newWord)
+	{
+		word = newWord;
+	}
+
+	public void setGuessed(String guessed) {
+		this.guessed = guessed;
+	}
+	
+	
 }

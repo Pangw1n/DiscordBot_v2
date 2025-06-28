@@ -13,6 +13,7 @@ import feature3.Feature3;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -121,10 +122,54 @@ class Feature3Test {
     	//Given
     	
     	//When
-    	String word = feature3.getWord();
+    	String word = feature3.getNewWord();
     	
     	//Then
     	assertNotEquals(word, null);
+    	assertTrue(word.length() > 0);
     }
 
+    @Test
+    void testGuess()
+    {
+    	//Given
+    	feature3.startGame(6, 0);
+    	feature3.setWord("hello");
+    	feature3.setGuessed("_____");
+    	
+    	//When
+    	boolean containsE = feature3.guess('e');
+    	boolean containsA = feature3.guess('a');
+    	
+    	//Then
+    	assertTrue(containsE);
+    	assertFalse(containsA);
+    }
+    
+    @Test
+    void testHint()
+    {
+    	//Given
+    	feature3.startGame(6, 0);
+    	feature3.setWord("hello");
+    	feature3.setGuessed("_____");
+    	
+    	//When
+    	char character = feature3.hint(); 
+    	
+    	//Then
+    	assertTrue("hello".contains("" + character));
+    	
+    	
+    	
+    	//Given
+    	feature3.setWord("hello");
+    	feature3.setGuessed("h_llo");
+    	
+    	//When
+    	character = feature3.hint();
+    	
+    	//Then
+    	assertEquals('e', character);
+    }
 }

@@ -129,4 +129,19 @@ class Feature2Test {
     	assertFalse(result1);
     	assertTrue(result2);
     }
+    
+    @Test
+    void testPawnMoves()
+    {
+    	//Given
+    	feature2.resetBoard();
+    	
+    	//When
+    	boolean e4e5 = feature2.isLegal(feature2.board, 1, 4, 2, 4);
+    	
+    	//Then
+    	assertTrue(e4e5);
+    	
+    	
+    }
 }
