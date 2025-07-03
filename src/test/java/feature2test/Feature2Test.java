@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import feature2.Color;
 import feature2.Feature2;
+import feature2.PieceType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -137,11 +139,106 @@ class Feature2Test {
     	feature2.resetBoard();
     	
     	//When
-    	boolean e4e5 = feature2.isLegal(feature2.board, 1, 4, 2, 4);
+    	boolean e2e3 = feature2.isLegal(feature2.board, 1, 4, 2, 4);
+    	boolean e2e4 = feature2.isLegal(feature2.board, 1, 4, 3, 4);
+    	boolean e7e6 = feature2.isLegal(feature2.board, 6, 4, 5, 4);
+    	boolean e7e5 = feature2.isLegal(feature2.board, 6, 4, 4, 4);
+    	boolean e2f3 = feature2.isLegal(feature2.board, 1, 4, 2, 5);
+    	boolean e7f6 = feature2.isLegal(feature2.board, 1, 4, 2, 5);
+    	boolean e2f4 = feature2.isLegal(feature2.board, 1, 4, 3, 5);
+    	boolean e7f5 = feature2.isLegal(feature2.board, 6, 4, 4, 5);
+    	
+    	feature2.setPiece(2, 5, Color.BLACK, PieceType.PAWN);
+    	boolean e2xf3 = feature2.isLegal(feature2.board, 1, 4, 2, 5);
+    	feature2.setPiece(2, 4, Color.BLACK, PieceType.PAWN);
+    	boolean e2xe3 = feature2.isLegal(feature2.board, 1, 4, 2, 4);
+    	feature2.setPiece(5, 5, Color.WHITE, PieceType.PAWN);
+    	boolean e7xf6 = feature2.isLegal(feature2.board, 6, 4, 5, 5);
+    	feature2.setPiece(5, 4, Color.WHITE, PieceType.PAWN);
+    	boolean e7xe6 = feature2.isLegal(feature2.board, 6, 4, 5, 4);
+    	boolean e7e5blocked = feature2.isLegal(feature2.board, 6, 4, 4, 4);
+    	boolean e2e4blocked = feature2.isLegal(feature2.board, 1, 4, 3, 4);
+    	feature2.setPiece(2, 4, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(5, 4, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(3, 4, Color.BLACK, PieceType.PAWN);
+    	feature2.setPiece(4, 4, Color.WHITE, PieceType.PAWN);
+    	boolean e7xe5 = feature2.isLegal(feature2.board, 6, 4, 4, 4);
+    	boolean e2xe4 = feature2.isLegal(feature2.board, 1, 4, 3, 4);
+    	
+    	feature2.resetBoard();
+    	
+    	feature2.movePiece("e7", "e6");
+    	boolean e6e4 = feature2.isLegal(feature2.board, 5, 4, 3, 4);
+    	feature2.movePiece("e2", "e3");
+    	boolean e3e5 = feature2.isLegal(feature2.board, 2, 4, 4, 4);
     	
     	//Then
-    	assertTrue(e4e5);
+    	assertTrue(e2e3);
+    	assertTrue(e2e4);
+    	assertTrue(e7e6);
+    	assertTrue(e7e5);
+    	assertFalse(e2xe3);
+    	assertFalse(e7xe6);
+    	assertFalse(e2f4);
+    	assertFalse(e7f5);
     	
+    	assertFalse(e2f3);
+    	assertTrue(e2xf3);
+    	assertFalse(e7f6);
+    	assertTrue(e7xf6);
+    	assertFalse(e7e5blocked);
+    	assertFalse(e2e4blocked);
+    	assertFalse(e2xe4);
+    	assertFalse(e7xe5);
     	
+    	assertFalse(e6e4);
+    	assertFalse(e3e5);
+    }
+    @Test
+    void testKingMoves()
+    {
+    	//Given
+    	feature2.resetBoard();
+    	
+    	//When
+    	feature2.setPiece(1, 4, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(1, 3, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 6, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 5, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 3, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 2, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 1, Color.EMPTY, PieceType.EMPTY);
+    	boolean e1e2 = feature2.isLegal(feature2.board, 0, 4, 1, 4);
+    	boolean e1d2 = feature2.isLegal(feature2.board, 0, 4, 1, 3);
+    	boolean e1e3 = feature2.isLegal(feature2.board, 0, 4, 2, 4);
+    	boolean e1d1 = feature2.isLegal(feature2.board, 0, 4, 0, 3);
+    	boolean e1c3 = feature2.isLegal(feature2.board, 0, 4, 2, 2);
+    	
+    	boolean kingSide = feature2.isLegal(feature2.board, 0, 4, 0, 6);
+    	boolean queenSide = feature2.isLegal(feature2.board, 0, 4, 0, 2);
+    	
+    	feature2.setPiece(1, 3, Color.BLACK, PieceType.ROOK);
+    	feature2.setPiece(1, 5, Color.BLACK, PieceType.ROOK);
+    	boolean e1d1Check = feature2.isLegal(feature2.board, 0, 4, 0, 3);
+    	boolean e1e2Check = feature2.isLegal(feature2.board, 0, 4, 1, 4);
+    	
+    	boolean kingSideCheck = feature2.isLegal(feature2.board, 0, 4, 0, 6);
+    	boolean queenSideCheck = feature2.isLegal(feature2.board, 0, 4, 0, 2);
+    	
+    	//Then
+    	assertTrue(e1e2);
+    	assertTrue(e1d2);
+    	assertTrue(e1d1);
+    	assertFalse(e1c3);
+    	assertFalse(e1e3);
+    	
+    	assertTrue(kingSide);
+    	assertTrue(queenSide);
+    	
+    	assertFalse(e1d1Check);
+    	assertFalse(e1e2Check);
+    	
+    	assertFalse(kingSideCheck);
+    	assertFalse(queenSideCheck);
     }
 }

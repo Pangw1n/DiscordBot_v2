@@ -12,3 +12,4 @@ run.sh
 appspec.yml
 .gradle/
 /build/
+/bin/

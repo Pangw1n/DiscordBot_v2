@@ -176,6 +176,11 @@ public class Feature2 extends Feature
 		
 		board[fromRow][fromCol] = new Piece(type, color);
 	}
+	
+	public void setPiece(int row, int col, Color color, PieceType type)
+	{
+		board[row][col] = new Piece(type, color);
+	}
 
 	public String getBoard() {
 		String result = "```  a b c d e f g h\n";
