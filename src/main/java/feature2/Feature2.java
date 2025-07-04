@@ -366,7 +366,7 @@ public class Feature2 extends Feature
 							}
 						}
 					}
-					else if (direction == 1)
+					else
 					{
 						if (checkLine(board, fromRow, fromCol, 0, direction, 3))
 						{

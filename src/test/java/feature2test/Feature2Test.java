@@ -194,6 +194,7 @@ class Feature2Test {
     	assertFalse(e6e4);
     	assertFalse(e3e5);
     }
+    
     @Test
     void testKingMoves()
     {
@@ -203,6 +204,7 @@ class Feature2Test {
     	//When
     	feature2.setPiece(1, 4, Color.EMPTY, PieceType.EMPTY);
     	feature2.setPiece(1, 3, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(1, 2, Color.EMPTY, PieceType.EMPTY);
     	feature2.setPiece(0, 6, Color.EMPTY, PieceType.EMPTY);
     	feature2.setPiece(0, 5, Color.EMPTY, PieceType.EMPTY);
     	feature2.setPiece(0, 3, Color.EMPTY, PieceType.EMPTY);
@@ -212,11 +214,22 @@ class Feature2Test {
     	boolean e1d2 = feature2.isLegal(feature2.board, 0, 4, 1, 3);
     	boolean e1e3 = feature2.isLegal(feature2.board, 0, 4, 2, 4);
     	boolean e1d1 = feature2.isLegal(feature2.board, 0, 4, 0, 3);
-    	boolean e1c3 = feature2.isLegal(feature2.board, 0, 4, 2, 2);
+    	boolean e1b1 = feature2.isLegal(feature2.board, 0, 4, 0, 1);
+    	boolean e1c2 = feature2.isLegal(feature2.board, 0, 4, 1, 2);
     	
     	boolean kingSide = feature2.isLegal(feature2.board, 0, 4, 0, 6);
     	boolean queenSide = feature2.isLegal(feature2.board, 0, 4, 0, 2);
     	
+    	feature2.resetBoard();
+
+    	boolean kingSideBlocked = feature2.isLegal(feature2.board, 0, 4, 0, 6);
+    	boolean queenSideBlocked = feature2.isLegal(feature2.board, 0, 4, 0, 2);
+    	
+    	feature2.setPiece(0, 6, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 5, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 3, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 2, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 1, Color.EMPTY, PieceType.EMPTY);
     	feature2.setPiece(1, 3, Color.BLACK, PieceType.ROOK);
     	feature2.setPiece(1, 5, Color.BLACK, PieceType.ROOK);
     	boolean e1d1Check = feature2.isLegal(feature2.board, 0, 4, 0, 3);
@@ -224,21 +237,177 @@ class Feature2Test {
     	
     	boolean kingSideCheck = feature2.isLegal(feature2.board, 0, 4, 0, 6);
     	boolean queenSideCheck = feature2.isLegal(feature2.board, 0, 4, 0, 2);
+
+    	feature2.resetBoard();
+    	feature2.setPiece(0, 6, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 5, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 3, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 2, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 1, Color.EMPTY, PieceType.EMPTY);
+    	
+    	feature2.movePiece("e1", "d1");
+    	boolean kingSideMoved = feature2.isLegal(feature2.board, 0, 3, 0, 6);
+    	boolean queenSideMoved = feature2.isLegal(feature2.board, 0, 3, 0, 1);
+    	
+    	feature2.resetBoard();
+    	feature2.setPiece(0, 6, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 5, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 3, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 2, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 1, Color.EMPTY, PieceType.EMPTY);
+
+    	feature2.board[0][0].moved();
+    	feature2.board[0][7].moved();
+    	boolean kingSideRookMoved = feature2.isLegal(feature2.board, 0, 3, 0, 6);
+    	boolean queenSideRookMoved = feature2.isLegal(feature2.board, 0, 3, 0, 1);
+    	
+    	feature2.setPiece(0, 0, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(0, 7, Color.EMPTY, PieceType.EMPTY);
+    	boolean kingSideNoRook = feature2.isLegal(feature2.board, 0, 3, 0, 6);
+    	boolean queenSideNoRook = feature2.isLegal(feature2.board, 0, 3, 0, 1);
     	
     	//Then
     	assertTrue(e1e2);
     	assertTrue(e1d2);
     	assertTrue(e1d1);
-    	assertFalse(e1c3);
+    	assertFalse(e1b1);
     	assertFalse(e1e3);
+    	assertFalse(e1c2);
     	
     	assertTrue(kingSide);
     	assertTrue(queenSide);
+    	
+    	assertFalse(kingSideBlocked);
+    	assertFalse(queenSideBlocked);
     	
     	assertFalse(e1d1Check);
     	assertFalse(e1e2Check);
     	
     	assertFalse(kingSideCheck);
     	assertFalse(queenSideCheck);
+    	
+    	assertFalse(kingSideMoved);
+    	assertFalse(queenSideMoved);
+    	
+    	assertFalse(kingSideRookMoved);
+    	assertFalse(queenSideRookMoved);
+
+    	assertFalse(kingSideNoRook);
+    	assertFalse(queenSideNoRook);
+    }
+    
+    @Test
+    void testQueenMoves()
+    {
+    	//Given
+    	feature2.resetBoard();
+    	feature2.setPiece(0, 3, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(3, 3, Color.WHITE, PieceType.QUEEN);
+    	
+    	//When
+    	boolean d4d5 = feature2.isLegal(feature2.board, 3, 3, 4, 3);
+    	boolean d4e5 = feature2.isLegal(feature2.board, 3, 3, 4, 4);
+    	boolean d4e4 = feature2.isLegal(feature2.board, 3, 3, 3, 4);
+    	
+    	boolean d4e6 = feature2.isLegal(feature2.board, 3, 3, 5, 4);
+    	boolean d4d1 = feature2.isLegal(feature2.board, 3, 3, 0, 3);
+    	feature2.setPiece(3, 4, Color.WHITE, PieceType.PAWN);
+    	boolean d4f4 = feature2.isLegal(feature2.board, 3, 3, 3, 5);
+    	feature2.setPiece(4, 4, Color.WHITE, PieceType.PAWN);
+    	boolean d4f6 = feature2.isLegal(feature2.board, 3, 3, 5, 5);
+    	
+    	
+    	//Then
+    	assertTrue(d4d5);
+    	assertTrue(d4e5);
+    	assertTrue(d4e4);
+    	
+    	assertFalse(d4e6);
+    	assertFalse(d4d1);
+    	assertFalse(d4f4);
+    	assertFalse(d4f6);
+    }
+    
+    @Test
+    void testRookMoves()
+    {
+    	//Given
+    	feature2.resetBoard();
+    	feature2.setPiece(0, 3, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(3, 3, Color.WHITE, PieceType.ROOK);
+    	
+    	//When
+    	boolean d4d5 = feature2.isLegal(feature2.board, 3, 3, 4, 3);
+    	boolean d4e5 = feature2.isLegal(feature2.board, 3, 3, 4, 4);
+    	boolean d4e4 = feature2.isLegal(feature2.board, 3, 3, 3, 4);
+    	
+    	feature2.setPiece(3, 4, Color.WHITE, PieceType.PAWN);
+    	boolean d4f4 = feature2.isLegal(feature2.board, 3, 3, 3, 5);
+    	feature2.setPiece(4, 3, Color.WHITE, PieceType.PAWN);
+    	boolean d4d6 = feature2.isLegal(feature2.board, 3, 3, 5, 3);
+    	
+    	
+    	//Then
+    	assertTrue(d4d5);
+    	assertFalse(d4e5);
+    	assertTrue(d4e4);
+    	
+    	assertFalse(d4f4);
+    	assertFalse(d4d6);
+    }
+    
+    @Test
+    void testBishopMoves()
+    {
+    	//Given
+    	feature2.resetBoard();
+    	feature2.setPiece(0, 3, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(3, 3, Color.WHITE, PieceType.BISHOP);
+    	
+    	//When
+    	boolean d4d5 = feature2.isLegal(feature2.board, 3, 3, 4, 3);
+    	boolean d4e5 = feature2.isLegal(feature2.board, 3, 3, 4, 4);
+    	boolean d4e4 = feature2.isLegal(feature2.board, 3, 3, 3, 4);
+    	
+    	feature2.setPiece(4, 4, Color.WHITE, PieceType.PAWN);
+    	boolean d4f6 = feature2.isLegal(feature2.board, 3, 3, 5, 5);
+    	
+    	
+    	//Then
+    	assertFalse(d4d5);
+    	assertTrue(d4e5);
+    	assertFalse(d4e4);
+    	
+    	assertFalse(d4f6);
+    }
+    
+    @Test
+    void testKnightMoves()
+    {
+    	//Given
+    	feature2.resetBoard();
+    	feature2.setPiece(0, 3, Color.EMPTY, PieceType.EMPTY);
+    	feature2.setPiece(3, 3, Color.WHITE, PieceType.KNIGHT);
+    	
+    	//When
+    	boolean d4d5 = feature2.isLegal(feature2.board, 3, 3, 4, 3);
+    	boolean d4d6 = feature2.isLegal(feature2.board, 3, 3, 5, 3);
+    	boolean d4e4 = feature2.isLegal(feature2.board, 3, 3, 3, 4);
+    	boolean d4e5 = feature2.isLegal(feature2.board, 3, 3, 4, 4);
+    	boolean d4e6 = feature2.isLegal(feature2.board, 3, 3, 5, 4);
+    	boolean d4f4 = feature2.isLegal(feature2.board, 3, 3, 3, 5);
+    	boolean d4f5 = feature2.isLegal(feature2.board, 3, 3, 4, 5);
+    	boolean d4f6 = feature2.isLegal(feature2.board, 3, 3, 5, 5);
+    	
+    	
+    	//Then
+    	assertFalse(d4d5);
+    	assertFalse(d4d6);
+    	assertFalse(d4e4);
+    	assertFalse(d4e5);
+    	assertTrue(d4e6);
+    	assertFalse(d4f4);
+    	assertTrue(d4f5);
+    	assertFalse(d4f6);
     }
 }
