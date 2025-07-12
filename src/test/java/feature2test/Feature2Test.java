@@ -244,8 +244,8 @@ class Feature2Test {
     	feature2.setPiece(0, 3, Color.EMPTY, PieceType.EMPTY);
     	feature2.setPiece(0, 2, Color.EMPTY, PieceType.EMPTY);
     	feature2.setPiece(0, 1, Color.EMPTY, PieceType.EMPTY);
-    	
     	feature2.movePiece("e1", "d1");
+    	
     	boolean kingSideMoved = feature2.isLegal(feature2.board, 0, 3, 0, 6);
     	boolean queenSideMoved = feature2.isLegal(feature2.board, 0, 3, 0, 1);
     	
@@ -255,7 +255,7 @@ class Feature2Test {
     	feature2.setPiece(0, 3, Color.EMPTY, PieceType.EMPTY);
     	feature2.setPiece(0, 2, Color.EMPTY, PieceType.EMPTY);
     	feature2.setPiece(0, 1, Color.EMPTY, PieceType.EMPTY);
-
+    	
     	feature2.board[0][0].moved();
     	feature2.board[0][7].moved();
     	boolean kingSideRookMoved = feature2.isLegal(feature2.board, 0, 3, 0, 6);
@@ -265,6 +265,17 @@ class Feature2Test {
     	feature2.setPiece(0, 7, Color.EMPTY, PieceType.EMPTY);
     	boolean kingSideNoRook = feature2.isLegal(feature2.board, 0, 3, 0, 6);
     	boolean queenSideNoRook = feature2.isLegal(feature2.board, 0, 3, 0, 1);
+    	
+    	feature2.setPiece(0, 0, Color.WHITE, PieceType.BISHOP);
+    	feature2.setPiece(0, 7, Color.WHITE, PieceType.BISHOP);
+    	boolean kingSideBishop = feature2.isLegal(feature2.board, 0, 3, 0, 6);
+    	boolean queenSideBishop = feature2.isLegal(feature2.board, 0, 3, 0, 1);
+
+    	feature2.board[0][0].moved();
+    	feature2.board[0][7].moved();
+    	boolean kingSideBishopMoved = feature2.isLegal(feature2.board, 0, 3, 0, 6);
+    	boolean queenSideBishopMoved = feature2.isLegal(feature2.board, 0, 3, 0, 1);
+    	
     	
     	//Then
     	assertTrue(e1e2);
@@ -291,9 +302,15 @@ class Feature2Test {
     	
     	assertFalse(kingSideRookMoved);
     	assertFalse(queenSideRookMoved);
-
+    	
     	assertFalse(kingSideNoRook);
     	assertFalse(queenSideNoRook);
+
+    	assertFalse(kingSideBishop);
+    	assertFalse(queenSideBishop);
+
+    	assertFalse(kingSideBishopMoved);
+    	assertFalse(queenSideBishopMoved);
     }
     
     @Test
@@ -315,6 +332,7 @@ class Feature2Test {
     	boolean d4f4 = feature2.isLegal(feature2.board, 3, 3, 3, 5);
     	feature2.setPiece(4, 4, Color.WHITE, PieceType.PAWN);
     	boolean d4f6 = feature2.isLegal(feature2.board, 3, 3, 5, 5);
+    	boolean d4d4 = feature2.isLegal(feature2.board, 3, 3, 3, 3);
     	
     	
     	//Then
@@ -326,6 +344,7 @@ class Feature2Test {
     	assertFalse(d4d1);
     	assertFalse(d4f4);
     	assertFalse(d4f6);
+    	assertFalse(d4d4);
     }
     
     @Test
@@ -345,6 +364,7 @@ class Feature2Test {
     	boolean d4f4 = feature2.isLegal(feature2.board, 3, 3, 3, 5);
     	feature2.setPiece(4, 3, Color.WHITE, PieceType.PAWN);
     	boolean d4d6 = feature2.isLegal(feature2.board, 3, 3, 5, 3);
+    	boolean d4d4 = feature2.isLegal(feature2.board, 3, 3, 3, 3);
     	
     	
     	//Then
@@ -354,6 +374,7 @@ class Feature2Test {
     	
     	assertFalse(d4f4);
     	assertFalse(d4d6);
+    	assertFalse(d4d4);
     }
     
     @Test
@@ -371,6 +392,7 @@ class Feature2Test {
     	
     	feature2.setPiece(4, 4, Color.WHITE, PieceType.PAWN);
     	boolean d4f6 = feature2.isLegal(feature2.board, 3, 3, 5, 5);
+    	boolean d4d4 = feature2.isLegal(feature2.board, 3, 3, 3, 3);
     	
     	
     	//Then
@@ -379,6 +401,7 @@ class Feature2Test {
     	assertFalse(d4e4);
     	
     	assertFalse(d4f6);
+    	assertFalse(d4d4);
     }
     
     @Test
@@ -398,6 +421,7 @@ class Feature2Test {
     	boolean d4f4 = feature2.isLegal(feature2.board, 3, 3, 3, 5);
     	boolean d4f5 = feature2.isLegal(feature2.board, 3, 3, 4, 5);
     	boolean d4f6 = feature2.isLegal(feature2.board, 3, 3, 5, 5);
+    	boolean d4d4 = feature2.isLegal(feature2.board, 3, 3, 3, 3);
     	
     	
     	//Then
@@ -409,5 +433,23 @@ class Feature2Test {
     	assertFalse(d4f4);
     	assertTrue(d4f5);
     	assertFalse(d4f6);
+    	assertFalse(d4d4);
+    }
+    
+    @Test
+    void testCheckmate()
+    {
+    	//Given
+    	feature2.resetBoard();
+    	feature2.setPiece(1, 5, Color.BLACK, PieceType.BISHOP);
+    	feature2.setPiece(5, 5, Color.BLACK, PieceType.QUEEN);
+    	
+    	//When
+    	boolean checkmate01 = feature2.checkMate(Color.WHITE);
+    	boolean checkmate10 = feature2.checkMate(Color.BLACK);
+    	
+    	//Then
+    	assertTrue(checkmate01);
+    	assertFalse(checkmate10);
     }
 }

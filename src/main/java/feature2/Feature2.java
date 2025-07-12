@@ -359,7 +359,7 @@ public class Feature2 extends Feature
 									return false;
 								}
 							}
-							if (board[toRow][0].getType() == PieceType.ROOK && board[toRow][0].isFirstMove())
+							if (board[toRow][0].getType() == PieceType.ROOK && board[toRow][0].getColor() == piece.getColor() && board[toRow][0].isFirstMove())
 							{
 								movePiece("a" + (toRow + 1), "d" + (toRow + 1));
 								return true;
@@ -377,7 +377,7 @@ public class Feature2 extends Feature
 									return false;
 								}
 							}
-							if (board[toRow][7].getType() == PieceType.ROOK && board[toRow][7].isFirstMove())
+							if (board[toRow][7].getType() == PieceType.ROOK && board[toRow][7].getColor() == piece.getColor() && board[toRow][7].isFirstMove())
 							{
 								movePiece("h" + (toRow + 1), "f" + (toRow + 1));
 								return true;
@@ -501,14 +501,14 @@ public class Feature2 extends Feature
 										{
 											kingRow = r;
 											kingCol = c;
-											System.out.println(kingRow + " " + kingCol + " " + simBoard[r][c].getColor() + color);
+											//System.out.println(kingRow + " " + kingCol + " " + simBoard[r][c].getColor() + color);
 										}
 									}
 								}
-								System.out.println(fromRow + " " + fromCol + " to " + toRow + " " + toCol);
+								//System.out.println(fromRow + " " + fromCol + " to " + toRow + " " + toCol);
 								if (!checkAttack(simBoard, kingRow, kingCol, color.opposite()))
 								{
-									System.out.println("Return false");
+									//System.out.println("Return false");
 									return false;
 								}
 							}
