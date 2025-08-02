@@ -11,6 +11,7 @@ import org.mockito.MockitoAnnotations;
 
 import feature2.Color;
 import feature2.Feature2;
+import feature2.Piece;
 import feature2.PieceType;
 
 import java.io.ByteArrayOutputStream;
@@ -49,6 +50,8 @@ class Feature2Test {
         System.setOut(originalOut);
     }
 
+    
+    
     @Test
     void itShouldHaveACommand() {
         //Given
@@ -92,6 +95,216 @@ class Feature2Test {
 
         //Then
         verify(receivedMessage, never()).sendResponse("");
+    }
+    
+    @Test
+    void promoteToBishop() {
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!chess bishop");
+        feature2.setPromotion(true);
+        feature2.setPromotionCol(0);
+        feature2.setPromotionRow(0);
+        
+        //When
+        feature2.resetBoard();
+        feature2.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, times(1)).sendResponse(anyString());
+        assertEquals(PieceType.BISHOP, feature2.board[feature2.getPromotionRow()][feature2.getPromotionCol()].getType());
+    }
+    
+    @Test
+    void promoteToRook() {
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!chess rook");
+        feature2.setPromotion(true);
+        feature2.setPromotionCol(0);
+        feature2.setPromotionRow(0);
+        
+        //When
+        feature2.resetBoard();
+        feature2.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, times(1)).sendResponse(anyString());
+        assertEquals(PieceType.ROOK, feature2.board[feature2.getPromotionRow()][feature2.getPromotionCol()].getType());
+    }
+    
+    @Test
+    void promoteToKnight() {
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!chess knight");
+        feature2.setPromotion(true);
+        feature2.setPromotionCol(0);
+        feature2.setPromotionRow(0);
+        
+        //When
+        feature2.resetBoard();
+        feature2.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, times(1)).sendResponse(anyString());
+        assertEquals(PieceType.KNIGHT, feature2.board[feature2.getPromotionRow()][feature2.getPromotionCol()].getType());
+    }
+    
+    @Test
+    void promoteToQueen() {
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!chess queen");
+        feature2.setPromotion(true);
+        feature2.setPromotionCol(0);
+        feature2.setPromotionRow(0);
+        
+        //When
+        feature2.resetBoard();
+        feature2.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, times(1)).sendResponse(anyString());
+        assertEquals(PieceType.QUEEN, feature2.board[feature2.getPromotionRow()][feature2.getPromotionCol()].getType());
+    }
+    
+    @Test
+    void movePiece() {
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!chess e2 e4");
+        
+        //When
+        feature2.resetBoard();
+        feature2.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, times(1)).sendResponse(anyString());
+        assertEquals(PieceType.PAWN, feature2.board[3][4].getType());
+        assertNotEquals(PieceType.PAWN, feature2.board[1][4].getType());
+    }
+    
+    @Test
+    void commandIsTheWrongLength() {
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!chess e2 e4 e6");
+        
+        //When
+        feature2.resetBoard();
+        feature2.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, never()).sendResponse("");
+    }
+    
+    @Test
+    void cannotTakeYourOwnPiece() {
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!chess h1 g1");
+        
+        //When
+        feature2.resetBoard();
+        feature2.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, times(1)).sendResponse("You cannot take a piece of the same color");
+    }
+    
+    @Test
+    void cannotMoveOutOfBounds() {
+        //Given
+        
+        //When
+        feature2.resetBoard();
+        when(receivedMessage.getMessageContent()).thenReturn("!chess a1 `1");
+        feature2.handle(receivedMessage);
+        when(receivedMessage.getMessageContent()).thenReturn("!chess a1 a0");
+        feature2.handle(receivedMessage);
+        when(receivedMessage.getMessageContent()).thenReturn("!chess h1 i1");
+        feature2.handle(receivedMessage);
+        when(receivedMessage.getMessageContent()).thenReturn("!chess h1 h0");
+        feature2.handle(receivedMessage);
+        when(receivedMessage.getMessageContent()).thenReturn("!chess a8 `8");
+        feature2.handle(receivedMessage);
+        when(receivedMessage.getMessageContent()).thenReturn("!chess a8 a9");
+        feature2.handle(receivedMessage);
+        when(receivedMessage.getMessageContent()).thenReturn("!chess h8 i8");
+        feature2.handle(receivedMessage);
+        when(receivedMessage.getMessageContent()).thenReturn("!chess h8 h9");
+        feature2.handle(receivedMessage);
+        
+        when(receivedMessage.getMessageContent()).thenReturn("!chess `1 a1");
+        feature2.handle(receivedMessage);
+        when(receivedMessage.getMessageContent()).thenReturn("!chess a0 a1");
+        feature2.handle(receivedMessage);
+        when(receivedMessage.getMessageContent()).thenReturn("!chess i1 h1");
+        feature2.handle(receivedMessage);
+        when(receivedMessage.getMessageContent()).thenReturn("!chess h0 h1");
+        feature2.handle(receivedMessage);
+        when(receivedMessage.getMessageContent()).thenReturn("!chess `8 a8");
+        feature2.handle(receivedMessage);
+        when(receivedMessage.getMessageContent()).thenReturn("!chess a9 a8");
+        feature2.handle(receivedMessage);
+        when(receivedMessage.getMessageContent()).thenReturn("!chess i8 h8");
+        feature2.handle(receivedMessage);
+        when(receivedMessage.getMessageContent()).thenReturn("!chess h9 h8");
+        feature2.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, times(16)).sendResponse("Out of bounds");
+    }
+    
+    @Test
+    void illegalMove() {
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!chess e2 f4");
+        
+        //When
+        feature2.resetBoard();
+        feature2.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, times(1)).sendResponse("Illegal move");
+    }
+    
+    @Test
+    void cannotEndangerKing() {
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!chess f2 f3");
+        
+        //When
+        feature2.resetBoard();
+        feature2.setPiece(2, 6, Color.BLACK, PieceType.BISHOP);
+        feature2.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, times(1)).sendResponse("Endangers King");
+    }
+    
+    @Test
+    void promoteWhenWhitePawnReachesTheEnd() {
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!chess h7 h8");
+        
+        //When
+        feature2.resetBoard();
+        feature2.setPiece(6, 7, Color.WHITE, PieceType.PAWN);
+        feature2.setPiece(7, 7, Color.EMPTY, PieceType.EMPTY);
+        feature2.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, times(1)).sendResponse(feature2.getBoard() + "\n\"!chess [piece]\" to promote the pawn to a bishop, knight, rook, or queen");
+    }
+    
+    @Test
+    void promoteWhenBlackPawnReachesTheEnd() {
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!chess h2 h1");
+        
+        //When
+        feature2.resetBoard();
+        feature2.setPiece(1, 7, Color.BLACK, PieceType.PAWN);
+        feature2.setPiece(0, 7, Color.EMPTY, PieceType.EMPTY);
+        feature2.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, times(1)).sendResponse(feature2.getBoard() + "\n\"!chess [piece]\" to promote the pawn to a bishop, knight, rook, or queen");
     }
 
     @Test
@@ -500,5 +713,12 @@ class Feature2Test {
     	feature2.getBoard();
     	
     	//Then
+    }
+    
+    @Test
+    void oppositeOfEmptyReturnsEmpty()
+    {
+    	Color color = Color.EMPTY;
+    	assertEquals(Color.EMPTY, color.opposite());
     }
 }

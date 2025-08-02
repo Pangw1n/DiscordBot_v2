@@ -59,18 +59,21 @@ public class Feature2 extends Feature
 			}
 			else
 			{
+				/* Remove Piece
 				if (command.length == 1)
 				{
 					String from = command[0];
 					setPiece(from, "", "");
 					event.sendResponse(getBoard());
 				}
+				*/
 				if (command.length == 2)
 				{
 					String from = command[0];
 					String to = command[1];
 					event.sendResponse(movePiece(from, to));
 				}
+				/* Set Piece
 				else if (command.length == 3)
 				{
 					String from = command[0];
@@ -79,6 +82,7 @@ public class Feature2 extends Feature
 					setPiece(from, toColor, toPiece);
 					event.sendResponse(getBoard());
 				}
+				*/
 			}
 		}
 	}
@@ -90,7 +94,7 @@ public class Feature2 extends Feature
 		int toCol = to.charAt(0) - 'a';
 		int toRow = to.charAt(1) - '1';
 		
-		if (fromCol >= 8 || fromRow >= 8 || toCol >= 8 || toRow >= 8)
+		if (fromCol >= 8 || fromRow >= 8 || toCol >= 8 || toRow >= 8 || fromCol < 0 || fromRow < 0 || toCol < 0 || toRow < 0)
 			return "Out of bounds";
 		if (board[toRow][toCol].getColor() == board[fromRow][fromCol].getColor())
 			return "You cannot take a piece of the same color";
@@ -129,7 +133,7 @@ public class Feature2 extends Feature
 			return getBoard();
 		}
 	}
-	
+	/*
 	public void setPiece(String from, String toColor, String toPiece)
 	{
 		int fromCol = from.charAt(0) - 'a';
@@ -175,7 +179,7 @@ public class Feature2 extends Feature
 		}
 		
 		board[fromRow][fromCol] = new Piece(type, color);
-	}
+	}*/
 	
 	public void setPiece(int row, int col, Color color, PieceType type)
 	{
@@ -536,5 +540,26 @@ public class Feature2 extends Feature
 			}
 		}
 		return simBoard;
+	}
+	
+	public void setPromotion(boolean bool)
+	{
+		promotion = bool;
+	}
+	public int getPromotionRow()
+	{
+		return promotionRow;
+	}
+	public int getPromotionCol()
+	{
+		return promotionCol;
+	}
+	public void setPromotionRow(int row)
+	{
+		promotionRow = row;
+	}
+	public void setPromotionCol(int col)
+	{
+		promotionCol = col;
 	}
 }

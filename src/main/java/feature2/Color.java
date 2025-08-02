@@ -7,7 +7,7 @@ public enum Color {
 	{
 		if (this == BLACK)
 			return WHITE;
-		else if (this == WHITE)
+		if (this == WHITE)
 			return BLACK;
 		else
 			return EMPTY;

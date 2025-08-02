@@ -115,6 +115,101 @@ class Feature3Test {
         //Then
         assertEquals(command, helpEmbedTitle);
     }
+
+    @Test
+    void dontHandleWhenNotPlaying() {
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!hangman a");
+
+        //When
+        feature3.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, never()).sendResponse("");
+    }
+
+    @Test
+    void dontHandleWhenInputIsNot2Words() {
+        //Given
+		feature3.startGame(6, 1);
+        when(receivedMessage.getMessageContent()).thenReturn("!hangman a a");
+
+        //When
+        feature3.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, never()).sendResponse("");
+    }
+
+    @Test
+    void dontHandleWhenGuessIsNotAChar() {
+        //Given
+		feature3.startGame(6, 1);
+        when(receivedMessage.getMessageContent()).thenReturn("!hangman aa");
+
+        //When
+        feature3.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, never()).sendResponse("");
+    }
+
+    @Test
+    void correctGuess() {
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!hangman e");
+    	feature3.startGame(6, 0);
+    	feature3.setWord("hello");
+    	feature3.setGuessed("_____");
+
+        //When
+        feature3.handle(receivedMessage);
+
+        //Then
+        String response = "``lives: " + feature3.getLives() + " hints: " + feature3.getHints() + "\n" + feature3.getGuessed() + "\nIncorrect guesses: ``";
+
+        verify(receivedMessage, times(1)).sendResponse(response);
+    }
+
+    @Test
+    void incorrectGuess() {
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!hangman a");
+    	feature3.startGame(6, 0);
+    	feature3.setWord("hello");
+    	feature3.setGuessed("_____");
+
+        //When
+        feature3.handle(receivedMessage);
+
+        //Then
+        String response = "``lives: " + feature3.getLives() + " hints: " + feature3.getHints() + "\n" + feature3.getGuessed() + "\nIncorrect guesses: a``";
+
+        verify(receivedMessage, times(1)).sendResponse(response);
+    }
+
+    @Test
+    void alreadyGuessed() {
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!hangman e");
+    	feature3.startGame(6, 0);
+    	feature3.setWord("hello");
+    	feature3.setGuessed("_____");
+
+        //When
+    	feature3.guess('e');
+        feature3.handle(receivedMessage);
+        
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!hangman a");
+
+        //When
+    	feature3.guess('a');
+        feature3.handle(receivedMessage);
+
+        //Then
+        verify(receivedMessage, times(2)).sendResponse("``You already guessed that letter``");
+    }
     
     @Test
     void getWordShouldReturnAString()

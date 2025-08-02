@@ -38,93 +38,90 @@ public class Feature3 extends Feature
         if (messageContent.equalsIgnoreCase(COMMAND))
         {
 			startGame(6, 1);
-			event.sendResponse("``lives: " + lives + " hints: " + hints + "\n" + guessed + "\nIncorrect guesses: ``");
+			event.sendResponse("``lives: " + getLives() + " hints: " + getHints() + "\n" + getGuessed() + "\nIncorrect guesses: ``");
         }
 		if (messageContent.trim().indexOf(COMMAND) == 0)
 		{
 			String[] command = messageContent.trim().split(" ");
-			if (command[0].equalsIgnoreCase(COMMAND))
+			if (playing && command.length == 2 && command[1].length() == 1)
 			{
-				if (playing && command.length == 2 && command[1].length() == 1)
+				char guess = command[1].toLowerCase().charAt(0);
+				if (getGuessed().contains("" + guess) || getIncorrect().contains(guess))
 				{
-					char guess = command[1].toLowerCase().charAt(0);
-					if (guessed.contains("" + guess) || incorrect.contains(guess))
-					{
-						event.sendResponse("``You already guessed that letter``");
-						return;
-					}
-					boolean correct = guess(guess);
-					
-					if (guessed.equalsIgnoreCase(word))
-					{
-						event.sendResponse("``You guessed the word! \nThe word was " + word + "``");
-						playing = false;
-					}
-					else if (lives <= 0)
-					{
-						event.sendResponse("``You ran out of lives! \nThe word was " + word + "``");
-						playing = false;
-					}
-					else
-					{
-						String response = "``lives: " + lives + " hints: " + hints + "\n" + guessed + "\nIncorrect guesses: ";
-						
-						for (int i = 0; i < incorrect.size(); i++)
-						{
-							response += incorrect.get(i);
-							if (i < incorrect.size() - 1)
-							{
-								response += ", ";
-							}
-						}
-						response += "``";
-					
-						event.sendResponse(response);
-					}
+					event.sendResponse("``You already guessed that letter``");
+					return;
 				}
-				else if (playing && command.length == 2 && command[1].equalsIgnoreCase("hint"))
+				boolean correct = guess(guess);
+				
+				if (getGuessed().equalsIgnoreCase(word))
 				{
-					if (hints > 0)
-					{
-						hint();
-						hints--;
-						
-						String response = "``lives: " + lives + " hints: " + hints + "\n" + guessed + "\nIncorrect guesses: ";
-						
-						for (int i = 0; i < incorrect.size(); i++)
-						{
-							response += incorrect.get(i);
-							if (i < incorrect.size() - 1)
-							{
-								response += ", ";
-							}
-						}
-						response += "``";
-					
-						event.sendResponse(response);
-					}
-					else
-					{
-						event.sendResponse("``No hints remaining``");
-					}
+					event.sendResponse("``You guessed the word! \nThe word was " + word + "``");
+					playing = false;
 				}
-				else if (command.length == 2 && command[1].length() != 1)
+				else if (getLives() <= 0)
 				{
-					if (command[1].equalsIgnoreCase("easy"))
+					event.sendResponse("``You ran out of lives! \nThe word was " + word + "``");
+					playing = false;
+				}
+				else
+				{
+					String response = "``lives: " + getLives() + " hints: " + getHints() + "\n" + getGuessed() + "\nIncorrect guesses: ";
+					
+					for (int i = 0; i < getIncorrect().size(); i++)
 					{
-						startGame(8, 3);
-						event.sendResponse("``lives: " + lives + " hints: " + hints + "\n" + guessed + "\nIncorrect guesses: ``");
+						response += getIncorrect().get(i);
+						if (i < getIncorrect().size() - 1)
+						{
+							response += ", ";
+						}
 					}
-					else if (command[1].equalsIgnoreCase("normal"))
+					response += "``";
+				
+					event.sendResponse(response);
+				}
+			}
+			else if (playing && command.length == 2 && command[1].equalsIgnoreCase("hint"))
+			{
+				if (getHints() > 0)
+				{
+					hint();
+					hints = getHints() - 1;
+					
+					String response = "``lives: " + getLives() + " hints: " + getHints() + "\n" + getGuessed() + "\nIncorrect guesses: ";
+					
+					for (int i = 0; i < getIncorrect().size(); i++)
 					{
-						startGame(6, 1);
-						event.sendResponse("``lives: " + lives + " hints: " + hints + "\n" + guessed + "\nIncorrect guesses: ``");
+						response += getIncorrect().get(i);
+						if (i < getIncorrect().size() - 1)
+						{
+							response += ", ";
+						}
 					}
-					else if (command[1].equalsIgnoreCase("hard"))
-					{
-						startGame(4, 0);
-						event.sendResponse("``lives: " + lives + " hints: " + hints + "\n" + guessed + "\nIncorrect guesses: ``");
-					}
+					response += "``";
+				
+					event.sendResponse(response);
+				}
+				else
+				{
+					event.sendResponse("``No hints remaining``");
+				}
+			}
+			else if (command.length == 2 && command[1].length() != 1)
+			{
+				if (command[1].equalsIgnoreCase("easy"))
+				{
+					startGame(8, 3);
+					event.sendResponse("``lives: " + getLives() + " hints: " + getHints() + "\n" + getGuessed() + "\nIncorrect guesses: ``");
+				}
+				else if (command[1].equalsIgnoreCase("normal"))
+				{
+					startGame(6, 1);
+					event.sendResponse("``lives: " + getLives() + " hints: " + getHints() + "\n" + getGuessed() + "\nIncorrect guesses: ``");
+				}
+				else if (command[1].equalsIgnoreCase("hard"))
+				{
+					startGame(4, 0);
+					event.sendResponse("``lives: " + getLives() + " hints: " + getHints() + "\n" + getGuessed() + "\nIncorrect guesses: ``");
 				}
 			}
 		}
@@ -138,7 +135,7 @@ public class Feature3 extends Feature
 		guessed = "";
 		for (int i = 0; i < word.length(); i++)
 		{
-			guessed += "_";
+			guessed = getGuessed() + "_";
 		}
 		incorrect = new ArrayList<Character>();
 		playing = true;
@@ -147,7 +144,7 @@ public class Feature3 extends Feature
 	public boolean guess(char guess)
 	{
 		boolean correct = false;
-		StringBuilder builder = new StringBuilder(guessed);
+		StringBuilder builder = new StringBuilder(getGuessed());
 		for (int i = 0; i < word.length(); i++)
 		{
 			if (guess == word.charAt(i))
@@ -159,8 +156,8 @@ public class Feature3 extends Feature
 		guessed = builder.toString();
 		if (!correct)
 		{
-			incorrect.add(guess);
-			lives -= 1;
+			getIncorrect().add(guess);
+			lives = getLives() - 1;
 		}
 		return correct;
 	}
@@ -186,13 +183,13 @@ public class Feature3 extends Feature
 		ArrayList<Character> letters = new ArrayList<Character>();
 		for (int i = 0; i < word.length(); i++)
 		{
-			if (guessed.charAt(i) != word.charAt(i) && !letters.contains(word.charAt(i)))
+			if (getGuessed().charAt(i) != word.charAt(i) && !letters.contains(word.charAt(i)))
 			{
 				letters.add(word.charAt(i));
 			}
 		}
 		char character = letters.get((int)(Math.random() * letters.size()));
-		StringBuilder builder = new StringBuilder(guessed);
+		StringBuilder builder = new StringBuilder(getGuessed());
 		for (int i = 0; i < word.length(); i++)
 		{
 			if (character == word.charAt(i))
@@ -211,6 +208,22 @@ public class Feature3 extends Feature
 
 	public void setGuessed(String guessed) {
 		this.guessed = guessed;
+	}
+
+	public int getLives() {
+		return lives;
+	}
+
+	public int getHints() {
+		return hints;
+	}
+
+	public String getGuessed() {
+		return guessed;
+	}
+
+	public ArrayList<Character> getIncorrect() {
+		return incorrect;
 	}
 	
 	
