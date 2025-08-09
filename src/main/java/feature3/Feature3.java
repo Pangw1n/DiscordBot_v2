@@ -38,7 +38,7 @@ public class Feature3 extends Feature
         if (messageContent.equalsIgnoreCase(COMMAND))
         {
 			startGame(6, 1);
-			event.sendResponse("``lives: " + getLives() + " hints: " + getHints() + "\n" + getGuessed() + "\nIncorrect guesses: ``");
+			event.sendResponse(getResponse());
         }
 		if (messageContent.trim().indexOf(COMMAND) == 0)
 		{
@@ -51,7 +51,7 @@ public class Feature3 extends Feature
 					event.sendResponse("``You already guessed that letter``");
 					return;
 				}
-				boolean correct = guess(guess);
+				guess(guess);
 				
 				if (getGuessed().equalsIgnoreCase(word))
 				{
@@ -65,19 +65,7 @@ public class Feature3 extends Feature
 				}
 				else
 				{
-					String response = "``lives: " + getLives() + " hints: " + getHints() + "\n" + getGuessed() + "\nIncorrect guesses: ";
-					
-					for (int i = 0; i < getIncorrect().size(); i++)
-					{
-						response += getIncorrect().get(i);
-						if (i < getIncorrect().size() - 1)
-						{
-							response += ", ";
-						}
-					}
-					response += "``";
-				
-					event.sendResponse(response);
+					event.sendResponse(getResponse());
 				}
 			}
 			else if (playing && command.length == 2 && command[1].equalsIgnoreCase("hint"))
@@ -86,20 +74,8 @@ public class Feature3 extends Feature
 				{
 					hint();
 					hints = getHints() - 1;
-					
-					String response = "``lives: " + getLives() + " hints: " + getHints() + "\n" + getGuessed() + "\nIncorrect guesses: ";
-					
-					for (int i = 0; i < getIncorrect().size(); i++)
-					{
-						response += getIncorrect().get(i);
-						if (i < getIncorrect().size() - 1)
-						{
-							response += ", ";
-						}
-					}
-					response += "``";
 				
-					event.sendResponse(response);
+					event.sendResponse(getResponse());
 				}
 				else
 				{
@@ -111,20 +87,39 @@ public class Feature3 extends Feature
 				if (command[1].equalsIgnoreCase("easy"))
 				{
 					startGame(8, 3);
-					event.sendResponse("``lives: " + getLives() + " hints: " + getHints() + "\n" + getGuessed() + "\nIncorrect guesses: ``");
 				}
 				else if (command[1].equalsIgnoreCase("normal"))
 				{
 					startGame(6, 1);
-					event.sendResponse("``lives: " + getLives() + " hints: " + getHints() + "\n" + getGuessed() + "\nIncorrect guesses: ``");
 				}
 				else if (command[1].equalsIgnoreCase("hard"))
 				{
 					startGame(4, 0);
-					event.sendResponse("``lives: " + getLives() + " hints: " + getHints() + "\n" + getGuessed() + "\nIncorrect guesses: ``");
 				}
+				else
+				{
+					return;
+				}
+				event.sendResponse(getResponse());
 			}
 		}
+	}
+	
+	public String getResponse()
+	{
+		String response = "``lives: " + getLives() + " hints: " + getHints() + "\n" + getGuessed() + "\nIncorrect guesses: ";
+		
+		for (int i = 0; i < getIncorrect().size(); i++)
+		{
+			response += getIncorrect().get(i);
+			if (i < getIncorrect().size() - 1)
+			{
+				response += ", ";
+			}
+		}
+		response += "``";
+		
+		return response;
 	}
 	
 	public void startGame(int l, int h)
@@ -226,5 +221,7 @@ public class Feature3 extends Feature
 		return incorrect;
 	}
 	
-	
+	public String getWord() {
+		return word;
+	}
 }

@@ -166,7 +166,7 @@ class Feature3Test {
         feature3.handle(receivedMessage);
 
         //Then
-        String response = "``lives: " + feature3.getLives() + " hints: " + feature3.getHints() + "\n" + feature3.getGuessed() + "\nIncorrect guesses: ``";
+        String response = "``lives: " + feature3.getLives() + " hints: " + feature3.getHints() + "\n_e___\nIncorrect guesses: ``";
 
         verify(receivedMessage, times(1)).sendResponse(response);
     }
@@ -184,6 +184,17 @@ class Feature3Test {
 
         //Then
         String response = "``lives: " + feature3.getLives() + " hints: " + feature3.getHints() + "\n" + feature3.getGuessed() + "\nIncorrect guesses: a``";
+
+        verify(receivedMessage, times(1)).sendResponse(response);
+        
+        //Given
+        when(receivedMessage.getMessageContent()).thenReturn("!hangman b");
+
+        //When
+        feature3.handle(receivedMessage);
+
+        //Then
+        response = "``lives: " + feature3.getLives() + " hints: " + feature3.getHints() + "\n" + feature3.getGuessed() + "\nIncorrect guesses: a, b``";
 
         verify(receivedMessage, times(1)).sendResponse(response);
     }
@@ -209,6 +220,90 @@ class Feature3Test {
 
         //Then
         verify(receivedMessage, times(2)).sendResponse("``You already guessed that letter``");
+    }
+    
+    @Test
+    void guessedWord() {
+    	//Given
+        when(receivedMessage.getMessageContent()).thenReturn("!hangman e");
+    	feature3.startGame(6, 0);
+    	feature3.setWord("hello");
+    	feature3.setGuessed("h_llo");
+    	
+    	//When
+    	feature3.handle(receivedMessage);
+    	
+    	//Then
+    	verify(receivedMessage, times(1)).sendResponse("``You guessed the word! \nThe word was " + feature3.getWord() + "``");
+    }
+    
+    @Test
+    void outOfLives() {
+    	//Given
+        when(receivedMessage.getMessageContent()).thenReturn("!hangman a");
+    	feature3.startGame(0, 0);
+    	feature3.setWord("hello");
+    	
+    	//When
+    	feature3.handle(receivedMessage);
+    	
+    	//Then
+    	verify(receivedMessage, times(1)).sendResponse("``You ran out of lives! \nThe word was " + feature3.getWord() + "``");
+    }
+    
+    @Test
+    void hint() {
+    	//Given
+        when(receivedMessage.getMessageContent()).thenReturn("!hangman hint");
+    	feature3.startGame(6, 1);
+    	
+    	//When
+    	feature3.handle(receivedMessage);
+    	feature3.handle(receivedMessage);
+    	
+    	//Then
+    	verify(receivedMessage, times(1)).sendResponse(feature3.getResponse());
+    	verify(receivedMessage, times(1)).sendResponse("``No hints remaining``");
+    }
+    
+    @Test
+    void createGame()
+    {
+        when(receivedMessage.getMessageContent()).thenReturn("!hangman");
+    	feature3.handle(receivedMessage);
+    	verify(receivedMessage, times(1)).sendResponse(feature3.getResponse());
+    	assertEquals(6, feature3.getLives());
+    	assertEquals(1, feature3.getHints());
+    }
+    
+    @Test
+    void createEasyGame()
+    {
+        when(receivedMessage.getMessageContent()).thenReturn("!hangman easy");
+    	feature3.handle(receivedMessage);
+    	verify(receivedMessage, times(1)).sendResponse(feature3.getResponse());
+    	assertEquals(8, feature3.getLives());
+    	assertEquals(3, feature3.getHints());
+    }
+    
+    @Test
+    void createNormalGame()
+    {
+        when(receivedMessage.getMessageContent()).thenReturn("!hangman normal");
+    	feature3.handle(receivedMessage);
+    	verify(receivedMessage, times(1)).sendResponse(feature3.getResponse());
+    	assertEquals(6, feature3.getLives());
+    	assertEquals(1, feature3.getHints());
+    }
+    
+    @Test
+    void createHardGame()
+    {
+        when(receivedMessage.getMessageContent()).thenReturn("!hangman hard");
+    	feature3.handle(receivedMessage);
+    	verify(receivedMessage, times(1)).sendResponse(feature3.getResponse());
+    	assertEquals(4, feature3.getLives());
+    	assertEquals(0, feature3.getHints());
     }
     
     @Test
